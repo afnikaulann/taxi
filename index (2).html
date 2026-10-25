@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101827" />
+  <title>Taxi Lokal Sidrap</title>
+  <style>
+    :root { --ink:#101827; --muted:#667085; --line:#e5e7eb; --accent:#f5b82e; --bg:#f4f6f9; --white:#fff; --green:#12805c; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+    .top { background:linear-gradient(145deg,#101827,#24334a); color:white; padding:28px 18px 34px; border-radius:0 0 26px 26px; }
+    .wrap { width:min(760px,100%); margin:auto; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo { display:grid; place-items:center; width:46px;height:46px;border-radius:15px;background:var(--accent);color:#111827;font-size:24px; }
+    .brand h1 { margin:0;font-size:21px;letter-spacing:-.4px; }
+    .brand p { margin:3px 0 0;color:#cbd5e1;font-size:13px; }
+    .hero { margin-top:28px; }
+    .eyebrow { color:var(--accent);font-weight:800;font-size:11px;letter-spacing:1.5px;text-transform:uppercase; }
+    .hero h2 { font-size:clamp(27px,7vw,38px);line-height:1.08;margin:8px 0 10px;letter-spacing:-1px; }
+    .hero p { margin:0;color:#d4dbe6;line-height:1.5;font-size:14px;max-width:520px; }
+    main { padding:18px 14px 40px; }
+    .card { background:white;border:1px solid #edf0f4;border-radius:20px;padding:18px;margin:0 0 14px;box-shadow:0 8px 24px rgba(16,24,39,.04); }
+    .card h3 { margin:0 0 16px;font-size:17px; }
+    label { display:block;font-weight:700;font-size:12px;margin:0 0 7px;color:#344054; }
+    input,select,textarea { width:100%;border:1px solid #d0d5dd;border-radius:12px;padding:13px 12px;font:inherit;font-size:14px;background:white;color:var(--ink);outline:none; }
+    input:focus,select:focus,textarea:focus { border-color:#e5a900;box-shadow:0 0 0 3px rgba(245,184,46,.17); }
+    .field { margin-bottom:14px; }
+    .grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+    .route-icon { display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;background:#fff4cf;font-size:15px; }
+    .label-row { display:flex;align-items:center;gap:8px;margin-bottom:7px; }
+    .label-row label { margin:0; }
+    .hint { color:var(--muted);font-size:11px;line-height:1.5;margin:7px 0 0; }
+    .notice { display:flex;gap:10px;padding:12px;border-radius:12px;background:#fff8e4;color:#765500;font-size:12px;line-height:1.5;margin-top:12px; }
+    .fare { background:#111c2e;color:white;border-radius:18px;padding:18px;margin-top:8px; }
+    .fare-top { display:flex;justify-content:space-between;gap:10px;align-items:start; }
+    .fare small { color:#cbd5e1;display:block;font-size:12px; }
+    .price { font-size:30px;font-weight:850;letter-spacing:-1px;margin-top:5px; }
+    .pill { background:#29384e;color:#ffdb75;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:700;white-space:nowrap; }
+    .fare-details { display:flex;justify-content:space-between;border-top:1px solid #344155;margin-top:16px;padding-top:13px;font-size:12px;color:#d3dae5;gap:12px; }
+    .actions { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px; }
+    button,.btn { display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;border:0;border-radius:12px;padding:13px 12px;font-size:13px;font-weight:800;text-decoration:none;cursor:pointer;min-height:46px; }
+    .primary { background:var(--accent);color:#151515;width:100%; }
+    .dark { background:#142136;color:white; }
+    .outline { background:white;border:1px solid var(--line);color:#182230; }
+    .whatsapp { background:#12805c;color:white; }
+    .full { width:100%;margin-top:10px; }
+    .payment-option { display:flex;gap:12px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:13px;margin:9px 0; }
+    .payment-option input { width:auto;margin-top:3px;accent-color:#101827; }
+    .payment-option strong { display:block;font-size:13px; }
+    .payment-option span { display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:3px; }
+    .pay-info { background:#f8fafc;border-radius:12px;padding:12px;font-size:12px;line-height:1.6;margin-top:10px; }
+    .pay-info img { display:block;max-width:190px;width:100%;height:auto;border-radius:8px;margin:10px auto; }
+    .footer { text-align:center;color:var(--muted);font-size:11px;line-height:1.6;padding:8px 20px 22px; }
+    .toast { display:none;padding:10px 12px;border-radius:10px;background:#e8f7ef;color:#126342;font-size:12px;margin-top:10px; }
+    @media(max-width:430px) { .grid{grid-template-columns:1fr;} .actions{grid-template-columns:1fr;} .card{padding:15px;} .top{padding-left:17px;padding-right:17px;} }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">🚕</div>
+        <div><h1>Taxi Lokal Sidrap</h1><p>Antar-jemput nyaman, mudah dipesan</p></div>
+      </div>
+      <div class="hero">
+        <div class="eyebrow">Perjalanan Anda, lebih praktis</div>
+        <h2>Pesan taxi lokal<br>tanpa ribet.</h2>
+        <p>Isi lokasi jemput dan tujuan. Cek estimasi ongkos, buka rute Google Maps, lalu kirim detail pesanan melalui WhatsApp.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <form id="bookingForm">
+      <section class="card">
+        <h3>📍 Detail perjalanan</h3>
+        <div class="field">
+          <div class="label-row"><span class="route-icon">●</span><label for="pickup">Lokasi penjemputan</label></div>
+          <input id="pickup" name="pickup" value="Pangkajene, Sidrap, Sulawesi Selatan" required autocomplete="street-address" />
+        </div>
+        <div class="field">
+          <div class="label-row"><span class="route-icon">⌖</span><label for="destination">Lokasi tujuan</label></div>
+          <input id="destination" name="destination" value="Maritengngae, Sidrap, Sulawesi Selatan" required />
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="date">Tanggal jemput</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+          <div class="field">
+            <label for="time">Jam jemput</label>
+            <input id="time" name="time" type="time" required />
+          </div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="customer">Nama pelanggan</label>
+            <input id="customer" name="customer" placeholder="Nama Anda" required />
+          </div>
+          <div class="field">
+            <label for="phone">Nomor WhatsApp</label>
+            <input id="phone" name="phone" type="tel" placeholder="08xxxxxxxxxx" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="passengers">Jumlah penumpang</label>
+          <select id="passengers" name="passengers">
+            <option>1 orang</option><option>2 orang</option><option>3 orang</option><option>4 orang</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="notes">Catatan untuk driver (opsional)</label>
+          <textarea id="notes" name="notes" rows="2" placeholder="Patokan lokasi, barang bawaan, dll."></textarea>
+        </div>
+        <div class="notice"><span>ⓘ</span><div><strong>Catatan jarak:</strong> jarak 3 km pada halaman ini hanya simulasi. Ongkos final harus dikonfirmasi berdasarkan rute jalan sebenarnya dan kondisi perjalanan.</div></div>
+      </section>
+
+      <section class="card">
+        <h3>💳 Estimasi ongkos</h3>
+        <div class="grid">
+          <div class="field">
+            <label for="distance">Jarak simulasi (km)</label>
+            <input id="distance" type="number" min="0" step="0.1" value="3" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="rate">Tarif per km (Rp)</label>
+            <input id="rate" type="number" min="0" step="500" value="5000" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="minimum">Tarif minimum (Rp)</label>
+          <input id="minimum" type="number" min="0" step="1000" value="15000" inputmode="numeric" />
+        </div>
+        <div class="fare">
+          <div class="fare-top">
+            <div><small>Estimasi ongkos</small><div class="price" id="fareValue">Rp15.000</div></div>
+            <span class="pill">SIMULASI</span>
+          </div>
+          <div class="fare-details">
+            <span id="distanceText">3 km × Rp5.000/km</span>
+            <span id="minimumText">Minimum Rp15.000</span>
+          </div>
+        </div>
+        <p class="hint">Rumus: nilai terbesar antara (jarak × tarif/km) dan tarif minimum. Belum termasuk biaya tambahan jika disepakati.</p>
+        <div class="actions">
+          <button class="dark" type="button" id="mapsBtn">🗺️ Buka Google Maps</button>
+          <button class="outline" type="button" id="copyBtn">Salin ringkasan</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>🏦 Metode pembayaran</h3>
+        <label class="payment-option"><input type="radio" name="payment" value="QRIS" checked /><div><strong>QRIS</strong><span>Bayar dengan aplikasi bank atau dompet digital yang mendukung QRIS.</span></div></label>
+        <label class="payment-option"><input type="radio" name="payment" value="Transfer bank" /><div><strong>Transfer bank</strong><span>Transfer ke rekening usaha yang ditampilkan oleh admin.</span></div></label>
+        <div class="pay-info" id="paymentInfo">
+          <strong>Pembayaran QRIS</strong><br>
+          Admin dapat memasang gambar QRIS usaha pada halaman ini. Untuk sementara, konfirmasikan nominal dan minta QRIS resmi dari admin sebelum membayar.
+        </div>
+        <p class="hint">Keamanan: jangan memasukkan PIN/OTP. Verifikasi pembayaran melalui aplikasi bank atau mutasi rekening, bukan hanya screenshot.</p>
+      </section>
+
+      <button class="primary" type="submit">Lanjutkan pemesanan via WhatsApp →</button>
+      <div class="toast" id="toast" role="status"></div>
+    </form>
+  </main>
+  <div class="footer">Taxi Lokal Sidrap · Tarif dan jarak di halaman ini adalah estimasi. Pesanan berlaku setelah dikonfirmasi oleh admin/driver.</div>
+
+<script>
+  // WA_ADMIN wajib diganti dengan nomor WhatsApp admin dalam format internasional tanpa tanda +.
+  // Contoh Indonesia: 62812XXXXXXXX
+  const WA_ADMIN = "6280000000000";
+
+  // Opsional: ganti detail rekening dan QRIS dengan data resmi usaha.
+  const BANK_DETAILS = "Nama bank: [ISI NAMA BANK]\\nNomor rekening: [ISI NOMOR REKENING]\\nAtas nama: [ISI NAMA PEMILIK]";
+  const QRIS_IMAGE = ""; // Contoh: "assets/qris-usaha.png". Kosongkan sampai gambar QRIS resmi tersedia.
+
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => "Rp" + Math.round(Number(n) || 0).toLocaleString("id-ID");
+  const today = new Date();
+  $("date").value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  $("time").value = "09:00";
+
+  function fare() {
+    const d = Math.max(0, Number($("distance").value) || 0);
+    const r = Math.max(0, Number($("rate").value) || 0);
+    const m = Math.max(0, Number($("minimum").value) || 0);
+    const amount = Math.max(d*r, m);
+    $("fareValue").textContent = money(amount);
+    $("distanceText").textContent = `${d} km × ${money(r)}/km`;
+    $("minimumText").textContent = `Minimum ${money(m)}`;
+    return { distance:d, rate:r, minimum:m, amount };
+  }
+  ["distance","rate","minimum"].forEach(id => $(id).addEventListener("input", fare));
+  fare();
+
+  function selectedPayment() {
+    return document.querySelector('input[name="payment"]:checked')?.value || "QRIS";
+  }
+  document.querySelectorAll('input[name="payment"]').forEach(el => el.addEventListener("change", () => {
+    const info = $("paymentInfo");
+    if (selectedPayment() === "QRIS") {
+      info.innerHTML = "<strong>Pembayaran QRIS</strong><br>Admin dapat memasang gambar QRIS usaha pada halaman ini. Untuk sementara, konfirmasikan nominal dan minta QRIS resmi dari admin sebelum membayar.";
+      if (QRIS_IMAGE) info.innerHTML += `<img src="${QRIS_IMAGE}" alt="QRIS resmi usaha">`;
+    } else {
+      info.innerHTML = `<strong>Transfer bank</strong><br><pre style="white-space:pre-wrap;font:inherit;margin:8px 0 0">${BANK_DETAILS}</pre><span>Pastikan data rekening di atas sudah diganti dengan data resmi usaha.</span>`;
+    }
+  }));
+
+  function summary() {
+    const f = fare();
+    return [
+      "PEMESANAN TAXI LOKAL SIDRAP",
+      `Nama: ${$("customer").value.trim()}`,
+      `WhatsApp pelanggan: ${$("phone").value.trim()}`,
+      `Jemput: ${$("pickup").value.trim()}`,
+      `Tujuan: ${$("destination").value.trim()}`,
+      `Tanggal: ${$("date").value}`,
+      `Jam: ${$("time").value}`,
+      `Penumpang: ${$("passengers").value}`,
+      `Jarak simulasi: ${f.distance} km (perlu konfirmasi rute aktual)`,
+      `Tarif: ${money(f.rate)}/km; minimum ${money(f.minimum)}`,
+      `Estimasi ongkos: ${money(f.amount)}`,
+      `Pembayaran: ${selectedPayment()}`,
+      `Catatan: ${$("notes").value.trim() || "-"}`,
+      "",
+      "Mohon konfirmasi ketersediaan driver, rute, tarif final, dan instruksi pembayaran."
+    ].join("\\n");
+  }
+
+  $("mapsBtn").addEventListener("click", () => {
+    const origin = $("pickup").value.trim();
+    const destination = $("destination").value.trim();
+    const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) + "&destination=" + encodeURIComponent(destination) + "&travelmode=driving";
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+  $("copyBtn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(summary());
+      $("toast").style.display = "block";
+      $("toast").textContent = "Ringkasan pesanan disalin.";
+    } catch (e) {
+      $("toast").style.display = "block";
+      $("toast").textContent = "Salin otomatis tidak tersedia. Silakan gunakan tombol WhatsApp untuk mengirim ringkasan.";
+    }
+  });
+
+  $("bookingForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!WA_ADMIN || WA_ADMIN === "6280000000000") {
+      $("toast").style.display = "block";
+      $("toast").textContent = "Website belum dikonfigurasi: ganti WA_ADMIN di file index.html dengan nomor WhatsApp admin yang benar.";
+      return;
+    }
+    const url = "https://wa.me/" + WA_ADMIN + "?text=" + encodeURIComponent(summary());
+    window.open(url, "_blank", "noopener,noreferrer");
+  });
+</script>
+</body>
+</html>
