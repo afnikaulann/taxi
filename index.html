@@ -12,7 +12,8 @@
     .top { background:linear-gradient(145deg,#101827,#24334a); color:white; padding:28px 18px 34px; border-radius:0 0 26px 26px; }
     .wrap { width:min(760px,100%); margin:auto; }
     .brand { display:flex; align-items:center; gap:12px; }
-    .logo { display:grid; place-items:center; width:46px;height:46px;border-radius:15px;background:var(--accent);color:#111827;font-size:24px; }
+    .logo { width:64px;height:64px;border-radius:18px;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.18);box-shadow:0 12px 28px rgba(0,0,0,.18);background:#fff; }
+    .logo img { width:100%;height:100%;object-fit:cover;object-position:center;display:block; }
     .brand h1 { margin:0;font-size:21px;letter-spacing:-.4px; }
     .brand p { margin:3px 0 0;color:#cbd5e1;font-size:13px; }
     .hero { margin-top:28px; }
@@ -53,6 +54,17 @@
     .pay-info img { display:block;max-width:190px;width:100%;height:auto;border-radius:8px;margin:10px auto; }
     .footer { text-align:center;color:var(--muted);font-size:11px;line-height:1.6;padding:8px 20px 22px; }
     .toast { display:none;padding:10px 12px;border-radius:10px;background:#e8f7ef;color:#126342;font-size:12px;margin-top:10px; }
+    .qrow { display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px dashed var(--line);font-size:13px;color:#344054; }
+    .qrow:last-child { border-bottom:0; }
+    .qrow span:last-child { font-weight:800; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .ac-wrap { position:relative; }
+    .ac-list { display:none;position:absolute;top:100%;left:0;right:0;z-index:40;background:white;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 30px rgba(16,24,39,.14);margin-top:5px;max-height:250px;overflow:auto; }
+    .ac-item { padding:10px 13px;cursor:pointer;border-bottom:1px solid #f2f4f7; }
+    .ac-item:last-child { border-bottom:0; }
+    .ac-item strong { display:block;font-size:13px; }
+    .ac-item span { display:block;color:var(--muted);font-size:11px;margin-top:2px; }
+    .ac-item:hover { background:#fff8e4; }
     @media(max-width:430px) { .grid{grid-template-columns:1fr;} .actions{grid-template-columns:1fr;} .card{padding:15px;} .top{padding-left:17px;padding-right:17px;} }
   </style>
 </head>
@@ -60,7 +72,10 @@
   <header class="top">
     <div class="wrap">
       <div class="brand">
-        <div class="logo">🚕</div>
+      <div class="logo">
+      <img src="img/logo.png" alt="Logo Taxi">
+      
+</div>
         <div><h1>Taxi Lokal Sidrap</h1><p>Antar-jemput nyaman, mudah dipesan</p></div>
       </div>
       <div class="hero">
@@ -75,13 +90,17 @@
     <form id="bookingForm">
       <section class="card">
         <h3>📍 Detail perjalanan</h3>
-        <div class="field">
+        <div class="field ac-wrap">
           <div class="label-row"><span class="route-icon">●</span><label for="pickup">Lokasi penjemputan</label></div>
-          <input id="pickup" name="pickup" value="Pangkajene, Sidrap, Sulawesi Selatan" required autocomplete="street-address" />
+          <input id="pickup" name="pickup" value="Pangkajene, Sidrap, Sulawesi Selatan" required autocomplete="off" />
+          <div class="ac-list" id="pickupAc"></div>
+          <p class="hint">Ketik nama tempat (mis. kantor kejaksaan, pasar, rsud), lalu pilih dari daftar yang muncul.</p>
         </div>
-        <div class="field">
+        <div class="field ac-wrap">
           <div class="label-row"><span class="route-icon">⌖</span><label for="destination">Lokasi tujuan</label></div>
-          <input id="destination" name="destination" value="Maritengngae, Sidrap, Sulawesi Selatan" required />
+          <input id="destination" name="destination" value="Maritengngae, Sidrap, Sulawesi Selatan" required autocomplete="off" />
+          <div class="ac-list" id="destinationAc"></div>
+          <p class="hint">Ketik nama tempat tujuan, lalu pilih dari daftar yang muncul.</p>
         </div>
         <div class="grid">
           <div class="field">
@@ -113,40 +132,37 @@
           <label for="notes">Catatan untuk driver (opsional)</label>
           <textarea id="notes" name="notes" rows="2" placeholder="Patokan lokasi, barang bawaan, dll."></textarea>
         </div>
-        <div class="notice"><span>ⓘ</span><div><strong>Catatan jarak:</strong> jarak 3 km pada halaman ini hanya simulasi. Ongkos final harus dikonfirmasi berdasarkan rute jalan sebenarnya dan kondisi perjalanan.</div></div>
+        <div class="notice"><span>ⓘ</span><div><strong>Catatan jarak:</strong> jarak dihitung otomatis dari rute jalan (estimasi). Ongkos final tetap dikonfirmasi admin sesuai kondisi perjalanan.</div></div>
       </section>
 
       <section class="card">
         <h3>💳 Estimasi ongkos</h3>
-        <div class="grid">
-          <div class="field">
-            <label for="distance">Jarak simulasi (km)</label>
-            <input id="distance" type="number" min="0" step="0.1" value="3" inputmode="decimal" />
-          </div>
-          <div class="field">
-            <label for="rate">Tarif per km (Rp)</label>
-            <input id="rate" type="number" min="0" step="500" value="5000" inputmode="numeric" />
-          </div>
-        </div>
+        <button class="primary" type="button" id="autoCalcBtn" style="margin-bottom:14px">🧮 Hitung jarak &amp; ongkos otomatis</button>
         <div class="field">
-          <label for="minimum">Tarif minimum (Rp)</label>
-          <input id="minimum" type="number" min="0" step="1000" value="15000" inputmode="numeric" />
+          <label for="distance">Jarak (km)</label>
+          <input id="distance" type="number" min="0" step="0.1" value="0" inputmode="decimal" />
+          <p class="hint">Terisi otomatis dari rute lokasi jemput → tujuan. Bisa diubah manual bila perlu. Tarif tetap <strong>Rp5.000/km</strong>.</p>
         </div>
         <div class="fare">
           <div class="fare-top">
             <div><small>Estimasi ongkos</small><div class="price" id="fareValue">Rp15.000</div></div>
-            <span class="pill">SIMULASI</span>
+            <span class="pill">Rp5.000/KM</span>
           </div>
           <div class="fare-details">
-            <span id="distanceText">3 km × Rp5.000/km</span>
-            <span id="minimumText">Minimum Rp15.000</span>
+            <span id="distanceText">0 km × Rp5.000/km</span>
+            <span id="minimumText">Tarif tetap Rp5.000/km</span>
           </div>
         </div>
-        <p class="hint">Rumus: nilai terbesar antara (jarak × tarif/km) dan tarif minimum. Belum termasuk biaya tambahan jika disepakati.</p>
+        <p class="hint">Rumus: jarak × Rp5.000/km. Belum termasuk biaya tambahan jika disepakati.</p>
+        <div class="field" style="margin-top:14px">
+          <label>Cek tarif cepat</label>
+          <div id="fareTable"></div>
+        </div>
         <div class="actions">
           <button class="dark" type="button" id="mapsBtn">🗺️ Buka Google Maps</button>
-          <button class="outline" type="button" id="copyBtn">Salin ringkasan</button>
+          <button class="outline" type="button" id="gpsBtn">📍 Cek jarak dari lokasi saya</button>
         </div>
+        <button class="outline full" type="button" id="copyBtn">Salin ringkasan</button>
       </section>
 
       <section class="card">
@@ -181,18 +197,178 @@
   $("date").value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
   $("time").value = "09:00";
 
+  // Tarif tetap usaha: Rp5.000/km.
+  const RATE_PER_KM = 5000;
+
   function fare() {
     const d = Math.max(0, Number($("distance").value) || 0);
-    const r = Math.max(0, Number($("rate").value) || 0);
-    const m = Math.max(0, Number($("minimum").value) || 0);
-    const amount = Math.max(d*r, m);
+    const amount = d * RATE_PER_KM;
     $("fareValue").textContent = money(amount);
-    $("distanceText").textContent = `${d} km × ${money(r)}/km`;
-    $("minimumText").textContent = `Minimum ${money(m)}`;
-    return { distance:d, rate:r, minimum:m, amount };
+    $("distanceText").textContent = `${d} km × ${money(RATE_PER_KM)}/km`;
+    $("minimumText").textContent = `Tarif tetap ${money(RATE_PER_KM)}/km`;
+    return { distance:d, rate:RATE_PER_KM, amount };
   }
-  ["distance","rate","minimum"].forEach(id => $(id).addEventListener("input", fare));
+  $("distance").addEventListener("input", fare);
   fare();
+
+  // Tabel cek tarif cepat untuk jarak umum.
+  [1, 2, 3, 5, 10, 15, 20].forEach(km => {
+    const row = document.createElement("div");
+    row.className = "qrow";
+    row.innerHTML = `<span>${km} km</span><span>${money(km * RATE_PER_KM)}</span>`;
+    $("fareTable").appendChild(row);
+  });
+
+  // ===== Pencarian lokasi & hitung rute otomatis (seperti Gojek) =====
+  // Autocomplete gratis: Photon (OpenStreetMap). Routing gratis: OSRM publik.
+  const toast = (msg) => { const t = $("toast"); t.style.display = "block"; t.textContent = msg; };
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  // Batas pencarian: Pulau Sulawesi, agar saran lokasi relevan dengan area usaha.
+  const AC_BBOX = "118.0,-7.5,125.0,1.0";
+
+  // Gabungkan hasil dari 2 sumber gratis (Photon + Nominatim) lalu hapus duplikat,
+  // supaya cakupan pencarian alamat selengkap mungkin.
+  async function searchPlaces(q) {
+    const jobs = await Promise.allSettled([
+      fetch("https://photon.komoot.io/api/?limit=8&bbox=" + encodeURIComponent(AC_BBOX) + "&q=" + encodeURIComponent(q)).then(r => r.json()),
+      fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&viewbox=" + encodeURIComponent(AC_BBOX) + "&q=" + encodeURIComponent(q)).then(r => r.json())
+    ]);
+    const results = [];
+    if (jobs[0].status === "fulfilled") {
+      for (const f of (jobs[0].value.features || [])) {
+        if (!f.geometry || !f.geometry.coordinates) continue;
+        const p = f.properties || {};
+        results.push({
+          name: p.name || q,
+          detail: [p.street, p.district, p.city || p.county, p.state].filter(Boolean).join(", "),
+          lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0]
+        });
+      }
+    }
+    if (jobs[1].status === "fulfilled") {
+      for (const item of (jobs[1].value || [])) {
+        const a = item.address || {};
+        const name = item.name || a.road || a.village || a.hamlet || (item.display_name || "").split(",")[0] || q;
+        const detail = [a.road, a.village || a.hamlet, a.suburb || a.district, a.city || a.municipality || a.county, a.state].filter(Boolean).join(", ");
+        results.push({ name, detail, lat: Number(item.lat), lon: Number(item.lon) });
+      }
+    }
+    // Hapus duplikat: nama sama & koordinat berdekatan (jarak < ~200 meter).
+    return results.filter(r => !results.some(x => x !== r && x.name.toLowerCase() === r.name.toLowerCase() && Math.abs(x.lat - r.lat) < 0.002 && Math.abs(x.lon - r.lon) < 0.002));
+  }
+
+  function setupAutocomplete(inputId) {
+    const input = $(inputId);
+    const list = $(inputId + "Ac");
+    let timer = null, seq = 0;
+    input.addEventListener("input", () => {
+      delete input.dataset.lat; delete input.dataset.lon;
+      clearTimeout(timer);
+      const q = input.value.trim();
+      if (q.length < 3) { list.innerHTML = ""; list.style.display = "none"; return; }
+      timer = setTimeout(async () => {
+        const mySeq = ++seq;
+        try {
+          const results = await searchPlaces(q);
+          if (mySeq !== seq) return; // abaikan balasan lama
+          if (!results.length) {
+            list.innerHTML = "<div class='ac-item'><span>Tidak ada lokasi ditemukan. Coba kata kunci lain.</span></div>";
+            list.style.display = "block";
+            return;
+          }
+          list.innerHTML = "";
+          results.slice(0, 10).forEach(r => {
+            const item = document.createElement("div");
+            item.className = "ac-item";
+            item.innerHTML = "<strong>" + esc(r.name) + "</strong><span>" + esc(r.detail) + "</span>";
+            item.addEventListener("mousedown", (e) => {
+              e.preventDefault();
+              input.value = r.name;
+              input.dataset.lat = r.lat;
+              input.dataset.lon = r.lon;
+              list.style.display = "none";
+              autoRouteIfReady();
+            });
+            list.appendChild(item);
+          });
+          list.style.display = "block";
+        } catch (err) { list.style.display = "none"; }
+      }, 600);
+    });
+    input.addEventListener("blur", () => setTimeout(() => { list.style.display = "none"; }, 150));
+    input.addEventListener("focus", () => { if (list.children.length) list.style.display = "block"; });
+  }
+  setupAutocomplete("pickup");
+  setupAutocomplete("destination");
+
+  async function geocodeOnce(query) {
+    const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=id&q=" + encodeURIComponent(query);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("layanan lokasi sedang tidak bisa diakses");
+    const data = await res.json();
+    return data.length ? data[0] : null;
+  }
+
+  // Cadangan: coba beberapa variasi query karena alamat kecil kadang tidak ditemukan dengan query lengkap.
+  async function geocode(text) {
+    const parts = text.split(",").map(s => s.trim()).filter(Boolean);
+    const queries = [text];
+    if (parts.length > 1) queries.push(parts[0] + ", Sulawesi Selatan");
+    queries.push(parts[0] || text);
+    for (const q of queries) {
+      const hit = await geocodeOnce(q);
+      if (hit) return { lat: hit.lat, lon: hit.lon };
+    }
+    throw new Error("lokasi tidak ditemukan: " + text);
+  }
+
+  async function computeRoute(o, d) {
+    const routeUrl = "https://router.project-osrm.org/route/v1/driving/" + o.lon + "," + o.lat + ";" + d.lon + "," + d.lat + "?overview=false";
+    const res = await fetch(routeUrl);
+    const data = await res.json();
+    if (data.code !== "Ok" || !data.routes || !data.routes.length) throw new Error("rute tidak ditemukan antara kedua lokasi");
+    return data.routes[0].distance / 1000;
+  }
+
+  const coordsOf = (id) => { const el = $(id); return (el.dataset.lat && el.dataset.lon) ? { lat: el.dataset.lat, lon: el.dataset.lon } : null; };
+
+  function applyDistance(km) {
+    $("distance").value = km.toFixed(1);
+    fare();
+    toast("Jarak rute " + km.toFixed(1) + " km. Estimasi ongkos " + money(fare().amount) + ".");
+  }
+
+  // Saat kedua lokasi sudah dipilih dari daftar saran, langsung hitung rute & ongkos.
+  async function autoRouteIfReady() {
+    const o = coordsOf("pickup"), d = coordsOf("destination");
+    if (!o || !d) return;
+    toast("Menghitung jarak rute...");
+    try { applyDistance(await computeRoute(o, d)); }
+    catch (err) { toast("Gagal menghitung rute (" + err.message + ")."); }
+  }
+
+  // Ongkos dihitung saat user menekan tombol "Hitung jarak & ongkos otomatis"
+  // atau saat kedua lokasi selesai dipilih dari daftar saran.
+  $("autoCalcBtn").addEventListener("click", async () => {
+    const btn = $("autoCalcBtn");
+    const pickup = $("pickup").value.trim();
+    const destination = $("destination").value.trim();
+    if (!pickup || !destination) { toast("Isi dulu lokasi penjemputan dan tujuan."); return; }
+    btn.disabled = true;
+    const oldLabel = btn.textContent;
+    btn.textContent = "Menghitung rute...";
+    toast("Mencari lokasi dan menghitung jarak rute...");
+    try {
+      const o = coordsOf("pickup") || await geocode(pickup);
+      const d = coordsOf("destination") || await geocode(destination);
+      applyDistance(await computeRoute(o, d));
+    } catch (err) {
+      toast("Gagal menghitung otomatis (" + err.message + "). Isi jarak manual atau cek di Google Maps.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = oldLabel;
+    }
+  });
 
   function selectedPayment() {
     return document.querySelector('input[name="payment"]:checked')?.value || "QRIS";
@@ -218,8 +394,8 @@
       `Tanggal: ${$("date").value}`,
       `Jam: ${$("time").value}`,
       `Penumpang: ${$("passengers").value}`,
-      `Jarak simulasi: ${f.distance} km (perlu konfirmasi rute aktual)`,
-      `Tarif: ${money(f.rate)}/km; minimum ${money(f.minimum)}`,
+      `Jarak rute: ${f.distance} km (estimasi otomatis)`,
+      `Tarif: ${money(f.rate)}/km`,
       `Estimasi ongkos: ${money(f.amount)}`,
       `Pembayaran: ${selectedPayment()}`,
       `Catatan: ${$("notes").value.trim() || "-"}`,
@@ -233,6 +409,25 @@
     const destination = $("destination").value.trim();
     const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) + "&destination=" + encodeURIComponent(destination) + "&travelmode=driving";
     window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+  $("gpsBtn").addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      $("toast").style.display = "block";
+      $("toast").textContent = "Perangkat atau browser tidak mendukung deteksi lokasi.";
+      return;
+    }
+    $("toast").style.display = "block";
+    $("toast").textContent = "Mendeteksi lokasi Anda...";
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const origin = pos.coords.latitude + "," + pos.coords.longitude;
+      const destination = $("destination").value.trim();
+      const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) + "&destination=" + encodeURIComponent(destination) + "&travelmode=driving";
+      window.open(url, "_blank", "noopener,noreferrer");
+      $("toast").textContent = "Rute dari lokasi Anda dibuka di Google Maps. Lihat jarak (km), lalu masukkan angkanya ke kolom jarak simulasi.";
+    }, () => {
+      $("toast").textContent = "Gagal mendeteksi lokasi. Izinkan akses lokasi di browser, atau isi jarak secara manual.";
+    });
   });
 
   $("copyBtn").addEventListener("click", async () => {
